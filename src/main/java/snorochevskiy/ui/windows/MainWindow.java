@@ -138,15 +138,17 @@ public class MainWindow {
         });
 
         AppConfig appConfig = AppConfigManager.load();
-        for (PersistedSpace s : appConfig.getOpenedSpaces()) {
-            SpaceMarshaller marshaller = SpacesMarshallerFactory.getInstance().getMarshaller(s.getSpaceClassName());
-            Space space = marshaller.unmarshall(s.getSpaceObject());
-            spaceChoiceBox.getItems().add(space);
-            if (appConfig.getLastActiveSpaceId() != null && appConfig.getLastActiveSpaceId().equals(space.getId())) {
-                spaceChoiceBox.setValue(space);
+        if (appConfig != null) {
+            for (PersistedSpace s : appConfig.getOpenedSpaces()) {
+                SpaceMarshaller marshaller = SpacesMarshallerFactory.getInstance().getMarshaller(s.getSpaceClassName());
+                Space space = marshaller.unmarshall(s.getSpaceObject());
+                spaceChoiceBox.getItems().add(space);
+                if (appConfig.getLastActiveSpaceId() != null && appConfig.getLastActiveSpaceId().equals(space.getId())) {
+                    spaceChoiceBox.setValue(space);
+                }
             }
+            initFileView();
         }
-        initFileView();
 
     }
 

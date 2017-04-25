@@ -75,7 +75,7 @@
             </MenuBar>
             <StackPane>
                <children>
-                  <ToolBar fx:id="editToolbar" prefHeight="40.0" prefWidth="200.0">
+                  <ToolBar fx:id="editToolbar" prefHeight="40.0" prefWidth="200.0" visible="false">
                     <items>
                       <Button fx:id="saveToolButton" mnemonicParsing="false" onAction="#onSaveButtonAction" text="Save" />
                         <Button fx:id="viewToolButton" mnemonicParsing="false" onAction="#onViewNoteButtonAction" text="View" />

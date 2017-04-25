@@ -56,8 +56,13 @@ public class AppConfigManager {
     }
 
     public static AppConfig load() {
-        AppConfig appConfig = new AppConfig();
 
+        File appConfigPropertiesFile = getAppConfigPropertiesFile();
+        if (!appConfigPropertiesFile.exists()) {
+            return null;
+        }
+
+        AppConfig appConfig = new AppConfig();
         try {
             Properties properties = new Properties();
             properties.load(new FileInputStream(getAppConfigPropertiesFile()));
@@ -66,11 +71,11 @@ public class AppConfigManager {
             XStream xstream = new XStream();
             List<PersistedSpace> persistedSpaces = (List<PersistedSpace>)xstream.fromXML(new FileInputStream(getSpacesXmlFile()));
             appConfig.setOpenedSpaces(persistedSpaces);
+            return appConfig;
         } catch (IOException e) {
             e.printStackTrace();
+            return null;
         }
-
-        return appConfig;
     }
 
     public static List<PersistedSpace> toPersistedSpace(List<Space> spaces) {
