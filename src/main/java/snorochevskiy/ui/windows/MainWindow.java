@@ -340,9 +340,9 @@ public class MainWindow {
 
         TreeNoteElement currentlySelectedTreeItem = ((TreeNoteElement)notesTreeView.getSelectionModel().getSelectedItem());
 
-        if (path.length == 1) {
-            return findChildTreeNoteItemByName(currentlySelectedTreeItem, href);
-        }
+//        if (path.length == 1) {
+//            return findChildTreeNoteItemByName(currentlySelectedTreeItem, href);
+//        }
 
         for (String p : path) {
             if (currentlySelectedTreeItem == null) {
