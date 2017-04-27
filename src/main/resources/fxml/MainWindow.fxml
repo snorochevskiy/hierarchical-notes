@@ -24,7 +24,7 @@
             <VBox spacing="5.0">
                <children>
                   <ChoiceBox fx:id="spaceChoiceBox" maxWidth="1.7976931348623157E308" />
-                  <TreeView fx:id="notesTreeView" />
+                  <TreeView fx:id="notesTreeView" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
             <StackPane prefHeight="150.0" prefWidth="257.0">
@@ -58,17 +58,13 @@
                 </Menu>
                 <Menu mnemonicParsing="false" text="Space">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="Delete" />
+                    <MenuItem mnemonicParsing="false" onAction="#onSpaceMenuDeleteSpace" text="Delete" />
                   </items>
                 </Menu>
-                  <Menu mnemonicParsing="false" text="Note">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Action 1" />
-                    </items>
-                  </Menu>
+                  <Menu mnemonicParsing="false" text="Note" />
                 <Menu mnemonicParsing="false" text="Help">
                   <items>
-                    <MenuItem mnemonicParsing="false" text="About" />
+                    <MenuItem mnemonicParsing="false" onAction="#onHelpMenuAbout" text="About" />
                   </items>
                 </Menu>
               </menus>

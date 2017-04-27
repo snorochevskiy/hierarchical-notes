@@ -9,6 +9,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Tab;
@@ -37,21 +38,16 @@ import snorochevskiy.mynotes.markups.AbstractMarkupTransformer;
 import snorochevskiy.mynotes.markups.MarkupTransformerManager;
 import snorochevskiy.mynotes.sources.AbstractNoteSource;
 import snorochevskiy.mynotes.sources.NoteResource;
+import snorochevskiy.mynotes.space.AbstractSpace;
 import snorochevskiy.mynotes.space.FsBasedSpace;
-import snorochevskiy.mynotes.space.Space;
 import snorochevskiy.mynotes.space.SpaceMarshaller;
 import snorochevskiy.mynotes.space.SpacesMarshallerFactory;
 import snorochevskiy.ui.notes.NoteTreeCellImpl;
 import snorochevskiy.ui.notes.TreeNoteElement;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainWindow {
 
@@ -61,12 +57,12 @@ public class MainWindow {
     @FXML private TreeView notesTreeView;
     @FXML private Tab editorTab;
     @FXML private Tab resultTab;
-    @FXML private ChoiceBox<Space> spaceChoiceBox;
+    @FXML private ChoiceBox<AbstractSpace> spaceChoiceBox;
 
     @FXML private TextArea editorTextArea;
     @FXML private WebView resultWebView;
 
-    //private List<Space> spaces = new ArrayList<Space>();
+    //private List<AbstractSpace> spaces = new ArrayList<AbstractSpace>();
     private AbstractNoteSource selectedNote;
 
     @FXML private ToolBar editToolbar;
@@ -101,8 +97,12 @@ public class MainWindow {
             @Override
             public void handle(WindowEvent event) {
                 AppConfig appConfig = new AppConfig();
-                appConfig.setLastActiveSpace(spaceChoiceBox.getValue().getId());
-                appConfig.setOpenedSpaces(AppConfigManager.toPersistedSpace(spaceChoiceBox.getItems()));
+                if (spaceChoiceBox.getValue() != null) {
+                    appConfig.setLastActiveSpace(spaceChoiceBox.getValue().getId());
+                }
+                if (!spaceChoiceBox.getItems().isEmpty()) {
+                    appConfig.setOpenedSpaces(AppConfigManager.toPersistedSpace(spaceChoiceBox.getItems()));
+                }
                 AppConfigManager.write(appConfig);
             }
         });
@@ -118,30 +118,24 @@ public class MainWindow {
             }
         });
 
+        notesTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<AbstractNoteSource>>() {
+            @Override
+            public void changed(ObservableValue<? extends TreeItem<AbstractNoteSource>> observable, TreeItem<AbstractNoteSource> oldValue, TreeItem<AbstractNoteSource> newValue) {
+                if (newValue instanceof TreeNoteElement) {
+                    setSelectedNote(((TreeNoteElement)newValue).getValue());
+                }
+            }
+        });
+
         URL webViewCss = this.getClass().getClassLoader().getResource("stylesheets/web-view.css");
 
         resultWebView.getEngine().setUserStyleSheetLocation(webViewCss.toExternalForm());
-        //resultWebView.getEngine().
-        resultWebView.getEngine().locationProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-
-                System.out.println("LOCATION OLD: " + oldValue + "   NEW: " + newValue);
-
-//                Platform.runLater(new Runnable() {
-//                    @Override public void run() {
-//                        resultWebView.getEngine().load(newValue);
-//                    }
-//
-//     });
-            }
-        });
 
         AppConfig appConfig = AppConfigManager.load();
         if (appConfig != null) {
             for (PersistedSpace s : appConfig.getOpenedSpaces()) {
                 SpaceMarshaller marshaller = SpacesMarshallerFactory.getInstance().getMarshaller(s.getSpaceClassName());
-                Space space = marshaller.unmarshall(s.getSpaceObject());
+                AbstractSpace space = marshaller.unmarshall(s.getSpaceObject());
                 spaceChoiceBox.getItems().add(space);
                 if (appConfig.getLastActiveSpaceId() != null && appConfig.getLastActiveSpaceId().equals(space.getId())) {
                     spaceChoiceBox.setValue(space);
@@ -159,10 +153,12 @@ public class MainWindow {
     @FXML
     private void onMenuCreateNewSpace() {
         CreateSpaceWindow createSpaceWindow = new CreateSpaceWindow();
-        Space space = createSpaceWindow.show();
+        AbstractSpace space = createSpaceWindow.show();
 
-        spaceChoiceBox.getItems().add(space);
-        setSelectedSpace(space);
+        if (space != null) {
+            spaceChoiceBox.getItems().add(space);
+            setSelectedSpace(space);
+        }
     }
 
     @FXML
@@ -171,7 +167,7 @@ public class MainWindow {
         File selectedFile = directoryChooser.showDialog(null);
 
         if (selectedFile != null) {
-            Space space = new FsBasedSpace(selectedFile);
+            AbstractSpace space = new FsBasedSpace(selectedFile);
             if (!spaceChoiceBox.getItems().contains(space)) {
                 spaceChoiceBox.getItems().add(space);
             } else {
@@ -186,6 +182,26 @@ public class MainWindow {
     @FXML
     private void onFileMenuClose() {
         Platform.exit();
+    }
+
+
+    @FXML
+    private void onSpaceMenuDeleteSpace() {
+        // TODO : implement
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Delete space");
+        alert.setHeaderText("Not implemented yet");
+        alert.setContentText("Not implemented yet");
+        alert.showAndWait();
+    }
+
+    @FXML
+    private void onHelpMenuAbout() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("About");
+        alert.setHeaderText("About program");
+        alert.setContentText("Tool for storing notes in hierarchical structure");
+        alert.showAndWait();
     }
 
     // ---------------------
@@ -287,7 +303,7 @@ public class MainWindow {
         toNoteViewMode();
     }
 
-    private void setSelectedSpace(Space space) {
+    private void setSelectedSpace(AbstractSpace space) {
         spaceChoiceBox.setValue(space);
         initFileView();
     }

@@ -35,14 +35,15 @@ public class NoteTreeCellImpl extends TreeCell<AbstractNoteSource> {
         renameMenuItem.setOnAction(this::handleRenameNote);
         contextMenu.getItems().add(renameMenuItem);
 
-        this.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
-            @Override public void handle(MouseEvent t) {
-                if (t.getButton() == MouseButton.PRIMARY && t.getClickCount() == 2) {
-                    mainWindowController.setSelectedNote(getItem());
-                    t.consume();
-                }
-            }
-        });
+//        this.addEventFilter(MouseEvent.MOUSE_PRESSED, new EventHandler<MouseEvent>() {
+//            @Override public void handle(MouseEvent t) {
+//
+//                if (t.getButton() == MouseButton.PRIMARY /*&& t.getClickCount() == 2*/) {
+//                    mainWindowController.setSelectedNote(getItem());
+//                    //t.consume();
+//                }
+//            }
+//        });
     }
 
     @Override

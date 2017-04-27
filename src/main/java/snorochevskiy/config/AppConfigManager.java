@@ -1,7 +1,7 @@
 package snorochevskiy.config;
 
 import com.thoughtworks.xstream.XStream;
-import snorochevskiy.mynotes.space.Space;
+import snorochevskiy.mynotes.space.AbstractSpace;
 import snorochevskiy.mynotes.space.SpaceMarshaller;
 import snorochevskiy.mynotes.space.SpacesMarshallerFactory;
 
@@ -78,9 +78,9 @@ public class AppConfigManager {
         }
     }
 
-    public static List<PersistedSpace> toPersistedSpace(List<Space> spaces) {
+    public static List<PersistedSpace> toPersistedSpace(List<AbstractSpace> spaces) {
         List<PersistedSpace> spacesToPersist = new ArrayList<>();
-        for (Space s : spaces) {
+        for (AbstractSpace s : spaces) {
             PersistedSpace spaceToPersist = new PersistedSpace();
             SpaceMarshaller marshaller = SpacesMarshallerFactory.getInstance().getMarshaller(s.getClass().getName());
             spaceToPersist.setSpaceClassName(s.getClass().getName());

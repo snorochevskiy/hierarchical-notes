@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.Properties;
 
 @XmlRootElement
-public class FsBasedSpace extends Space {
+public class FsBasedSpace extends AbstractSpace {
 
     public static final String FILE_SPACE_PROPERTIES = "space.properties";
 
@@ -36,7 +36,7 @@ public class FsBasedSpace extends Space {
 
         File spacePropertiesFile = new File(spaceDirectory, FILE_SPACE_PROPERTIES);
         if (spacePropertiesFile.exists()) {
-            throw new SpaceException("Space already exists", null);
+            throw new SpaceException("AbstractSpace already exists", null);
         }
 
         String id = String.valueOf(System.currentTimeMillis());
@@ -46,7 +46,7 @@ public class FsBasedSpace extends Space {
         spaceProperties.setProperty(PROPERTY_NAME, name);
         spaceProperties.setProperty(PROPERTY_MARKUP, markupType.getName());
         try {
-            spaceProperties.store(new FileOutputStream(spacePropertiesFile), "Space info");
+            spaceProperties.store(new FileOutputStream(spacePropertiesFile), "AbstractSpace info");
         } catch (FileNotFoundException e) {
             throw new SpaceException("Cannot create space. No directory.", e);
         } catch (IOException e) {

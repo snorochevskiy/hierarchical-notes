@@ -44,7 +44,7 @@ public class CreateSpaceWindow {
             e.printStackTrace();
             System.exit(1);
         }
-        stage.setTitle("Create new Space");
+        stage.setTitle("Create new AbstractSpace");
         stage.initModality(Modality.APPLICATION_MODAL);
     }
 
@@ -82,7 +82,7 @@ public class CreateSpaceWindow {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Creation space error");
             alert.setHeaderText("Cannot create space");
-            alert.setContentText("Space name shouldn't be blank");
+            alert.setContentText("AbstractSpace name shouldn't be blank");
 
             alert.showAndWait();
             return;

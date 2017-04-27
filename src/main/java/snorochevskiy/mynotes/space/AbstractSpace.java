@@ -6,18 +6,18 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import snorochevskiy.mynotes.markups.Markup;
 import snorochevskiy.mynotes.sources.AbstractNoteSource;
 
-public abstract class Space {
+public abstract class AbstractSpace {
 
     private String id;
 
     private String name;
     private Markup markupType;
 
-    protected Space() {
+    protected AbstractSpace() {
 
     }
 
-    protected Space(String id, String name, Markup markupType) {
+    protected AbstractSpace(String id, String name, Markup markupType) {
         this.id = id;
         this.name = name;
         this.markupType = markupType;
@@ -58,11 +58,11 @@ public abstract class Space {
 
     @Override
     public boolean equals(Object o) {
-        if (o == null || !(o instanceof Space)) {
+        if (o == null || !(o instanceof AbstractSpace)) {
             return false;
         }
 
-        Space other = (Space)o;
+        AbstractSpace other = (AbstractSpace)o;
         return new EqualsBuilder()
                 .append(this.name, other.name)
                 .append(this.markupType, other.markupType)
