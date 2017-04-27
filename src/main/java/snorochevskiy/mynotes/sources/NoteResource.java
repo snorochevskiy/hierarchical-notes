@@ -6,11 +6,18 @@ package snorochevskiy.mynotes.sources;
  */
 public class NoteResource {
 
+    private AbstractNoteSource note;
+
     private String name;
     private String contentType;
 
-    public NoteResource(String name) {
+    public NoteResource(AbstractNoteSource note, String name) {
+        this.note = note;
         this.name = name;
+    }
+
+    public AbstractNoteSource getNote() {
+        return note;
     }
 
     public String getName() {

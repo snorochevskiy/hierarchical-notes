@@ -8,9 +8,9 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
@@ -28,6 +28,8 @@ public class NoteResourcesWindow {
 
     @FXML private ListView<NoteResource> resourcesListView;
     @FXML private Label fileInfoLabel;
+    @FXML private Button onInsertButton;
+    @FXML private Button onDeleteButton;
 
     private AbstractNoteSource noteSource;
     private NoteResource selectedResource = null;
@@ -48,11 +50,15 @@ public class NoteResourcesWindow {
         stage.setTitle("Create new note");
         stage.initModality(Modality.APPLICATION_MODAL);
 
+        onInsertButton.disableProperty().bind(resourcesListView.getSelectionModel().selectedItemProperty().isNull());
+        onDeleteButton.disableProperty().bind(resourcesListView.getSelectionModel().selectedItemProperty().isNull());
+
         resourcesListView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<NoteResource>() {
             @Override
             public void changed(ObservableValue<? extends NoteResource> observable, NoteResource oldValue, NoteResource newValue) {
                 if (newValue != null) {
                     fileInfoLabel.setText("Name:" + newValue.getName() + "\nContent-Type: " + newValue.getContentType());
+
                 }
             }
         });
@@ -106,8 +112,20 @@ public class NoteResourcesWindow {
     @FXML
     private void onResourcesListViewClicked(MouseEvent event) {
         if (event.getClickCount() >= 2) {
-            selectedResource = resourcesListView.getSelectionModel().getSelectedItems().get(0);
-            stage.close();
+            onInsert();
         }
+    }
+
+    @FXML
+    private void onInsert() {
+        selectedResource = resourcesListView.getSelectionModel().getSelectedItems().get(0);
+        stage.close();
+    }
+
+    @FXML
+    private void onDelete() {
+        NoteResource resource = resourcesListView.getSelectionModel().getSelectedItems().get(0);
+        resource.getNote().deleteResource(resource);
+        resourcesListView.getItems().remove(resource);
     }
 }

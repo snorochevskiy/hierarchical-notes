@@ -57,7 +57,14 @@ public abstract class AbstractNoteSource {
 
     public abstract List<NoteResource> listResource();
 
+    /**
+     * Add resource from user's local filesystem to note.
+     * @param file
+     * @return
+     */
     public abstract NoteResource addResource(File file);
+
+    public abstract void deleteResource(NoteResource noteResource);
 
     /**
      * Used for creating new notes.

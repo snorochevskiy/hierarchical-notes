@@ -16,10 +16,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
-import java.nio.file.CopyOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
@@ -184,6 +182,17 @@ public class FileNoteSource extends AbstractNoteSource {
     }
 
     @Override
+    public void deleteResource(NoteResource noteResource) {
+        Path resourceToDelete = new File(noteDirectory, noteResource.getName()).toPath();
+        try {
+            Files.delete(resourceToDelete);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new SpaceException("Cannot delete resource.", e);
+        }
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (o == null || !(o instanceof FileNoteSource)) {
             return false;
@@ -212,7 +221,7 @@ public class FileNoteSource extends AbstractNoteSource {
     }
 
     private NoteResource toNoteResources(File file) {
-        NoteResource resource = new NoteResource(file.getName());
+        NoteResource resource = new NoteResource(this, file.getName());
         try {
             resource.setContentType(Files.probeContentType(file.toPath()));
         } catch (IOException e) {
