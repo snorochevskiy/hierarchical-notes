@@ -1,31 +1,22 @@
 package snorochevskiy.mynotes.markups.markdown;
 
 
-import com.vladsch.flexmark.ast.Document;
-import com.vladsch.flexmark.ast.Image;
 import com.vladsch.flexmark.ast.Node;
 import com.vladsch.flexmark.ext.abbreviation.AbbreviationExtension;
 import com.vladsch.flexmark.ext.definition.DefinitionExtension;
 import com.vladsch.flexmark.ext.footnotes.FootnoteExtension;
 import com.vladsch.flexmark.ext.tables.TablesExtension;
 import com.vladsch.flexmark.ext.typographic.TypographicExtension;
-import com.vladsch.flexmark.ext.wikilink.WikiImage;
-import com.vladsch.flexmark.ext.wikilink.WikiLink;
-import com.vladsch.flexmark.ext.wikilink.WikiLinkExtension;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.parser.ParserEmulationProfile;
-import com.vladsch.flexmark.util.collection.iteration.ReversiblePeekingIterator;
 import com.vladsch.flexmark.util.options.MutableDataSet;
 import snorochevskiy.mynotes.markups.AbstractMarkupTransformer;
 import snorochevskiy.mynotes.markups.Markup;
-import snorochevskiy.mynotes.sources.AbstractNoteSource;
-import snorochevskiy.mynotes.sources.FileNoteSource;
+import snorochevskiy.mynotes.note.AbstractNoteSource;
+import snorochevskiy.mynotes.note.FileNoteSource;
 
 import java.util.Arrays;
-
-import static com.vladsch.flexmark.ext.wikilink.WikiLinkExtension.IMAGE_PREFIX;
-import static com.vladsch.flexmark.parser.Parser.FENCED_CODE_CONTENT_BLOCK;
 
 public class MarkdownTransformer extends AbstractMarkupTransformer {
 

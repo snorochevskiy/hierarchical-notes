@@ -36,10 +36,11 @@ import snorochevskiy.config.AppConfigManager;
 import snorochevskiy.config.PersistedSpace;
 import snorochevskiy.mynotes.markups.AbstractMarkupTransformer;
 import snorochevskiy.mynotes.markups.MarkupTransformerManager;
-import snorochevskiy.mynotes.sources.AbstractNoteSource;
-import snorochevskiy.mynotes.sources.NoteResource;
+import snorochevskiy.mynotes.note.AbstractNoteSource;
+import snorochevskiy.mynotes.note.NoteResource;
 import snorochevskiy.mynotes.space.AbstractSpace;
 import snorochevskiy.mynotes.space.FsBasedSpace;
+import snorochevskiy.mynotes.space.SpaceException;
 import snorochevskiy.mynotes.space.SpaceMarshaller;
 import snorochevskiy.mynotes.space.SpacesMarshallerFactory;
 import snorochevskiy.ui.notes.NoteTreeCellImpl;
@@ -110,6 +111,17 @@ public class MainWindow {
 
     @FXML
     private void initialize() {
+
+        // Space choice
+        spaceChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AbstractSpace>() {
+            @Override
+            public void changed(ObservableValue<? extends AbstractSpace> observable, AbstractSpace oldValue, AbstractSpace newValue) {
+                setSelectedSpace(newValue);
+                initFileView();
+            }
+        });
+
+        // Tree view init
         notesTreeView.setEditable(false);
 
         notesTreeView.setCellFactory(new Callback<TreeView<TreeNoteElement>, TreeCell<TreeNoteElement> >() {
@@ -127,6 +139,7 @@ public class MainWindow {
             }
         });
 
+        // Web view init
         URL webViewCss = this.getClass().getClassLoader().getResource("stylesheets/web-view.css");
 
         resultWebView.getEngine().setUserStyleSheetLocation(webViewCss.toExternalForm());
@@ -135,10 +148,15 @@ public class MainWindow {
         if (appConfig != null) {
             for (PersistedSpace s : appConfig.getOpenedSpaces()) {
                 SpaceMarshaller marshaller = SpacesMarshallerFactory.getInstance().getMarshaller(s.getSpaceClassName());
-                AbstractSpace space = marshaller.unmarshall(s.getSpaceObject());
-                spaceChoiceBox.getItems().add(space);
-                if (appConfig.getLastActiveSpaceId() != null && appConfig.getLastActiveSpaceId().equals(space.getId())) {
-                    spaceChoiceBox.setValue(space);
+                try {
+                    AbstractSpace space = marshaller.unmarshall(s.getSpaceObject());
+                    spaceChoiceBox.getItems().add(space);
+                    if (appConfig.getLastActiveSpaceId() != null && appConfig.getLastActiveSpaceId().equals(space.getId())) {
+                        spaceChoiceBox.setValue(space);
+                    }
+                } catch (SpaceException e) {
+                    e.printStackTrace();
+                    // Just skip this space. Probably it was removed.
                 }
             }
             initFileView();
@@ -221,7 +239,6 @@ public class MainWindow {
         AbstractMarkupTransformer transformer = MarkupTransformerManager.getInstance().byMarkup(selectedNote.getMarkup());
         String html = transformer.transform(selectedNote, editorTextArea.getText());
 
-        System.out.println(html);
         resultWebView.getEngine().loadContent(html);
 
         toNoteViewMode();
@@ -290,7 +307,6 @@ public class MainWindow {
         AbstractMarkupTransformer transformer = MarkupTransformerManager.getInstance().byMarkup(selectedNote.getMarkup());
         String html = transformer.transform(selectedNote, selectedNote.getContents());
 
-        System.out.println(html);
         resultWebView.getEngine().loadContent(html);
         resultWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
             @Override
@@ -333,7 +349,6 @@ public class MainWindow {
                     EventTarget target = evt.getCurrentTarget();
                     HTMLAnchorElement anchorElement = (HTMLAnchorElement) target;
                     String href = anchorElement.getHref();
-                    System.out.println(href);
 
                     if (href.matches("^\\w{2,}:.+")) {
                         // TODO : open in media viewer

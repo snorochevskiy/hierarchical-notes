@@ -46,4 +46,14 @@ public class MarkupsManager {
 
         return null;
     }
+
+    public Markup byExtension(String extension) {
+        for (Markup m : getMarkups()) {
+            if (m.getExtension().equalsIgnoreCase(extension)) {
+                return m;
+            }
+        }
+
+        return null;
+    }
 }

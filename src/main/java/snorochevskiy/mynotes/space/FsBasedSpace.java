@@ -4,10 +4,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import snorochevskiy.mynotes.markups.Markup;
 import snorochevskiy.mynotes.markups.MarkupsManager;
-import snorochevskiy.mynotes.sources.AbstractNoteSource;
-import snorochevskiy.mynotes.sources.FileNoteSource;
+import snorochevskiy.mynotes.note.AbstractNoteSource;
+import snorochevskiy.mynotes.note.FileNoteSource;
 
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,7 +14,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
-@XmlRootElement
+
 public class FsBasedSpace extends AbstractSpace {
 
     public static final String FILE_SPACE_PROPERTIES = "space.properties";
@@ -60,12 +59,12 @@ public class FsBasedSpace extends AbstractSpace {
 
     public FsBasedSpace(String id, String name, Markup markupType, File spaceDirectory) {
         super(id, name, markupType);
-        rootNote = new FileNoteSource(null, "ROOT", markupType, spaceDirectory);
+        rootNote = new FileNoteSource(null, FileNoteSource.generateId(), "ROOT", markupType, spaceDirectory);
         rootNote.persist();
     }
 
     public FsBasedSpace(File spaceDirectory) {
-        this.rootNote = new FileNoteSource(null, spaceDirectory);
+        this.rootNote = FileNoteSource.fromFile(null, spaceDirectory);//new FileNoteSource(null, spaceDirectory);
 
         Properties spaceProperties = new Properties();
         try {

@@ -1,6 +1,6 @@
 package snorochevskiy.mynotes.markups;
 
-import snorochevskiy.mynotes.sources.AbstractNoteSource;
+import snorochevskiy.mynotes.note.AbstractNoteSource;
 
 public abstract class AbstractMarkupTransformer {
 

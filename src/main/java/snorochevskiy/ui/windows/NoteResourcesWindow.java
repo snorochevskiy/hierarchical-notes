@@ -1,13 +1,9 @@
 package snorochevskiy.ui.windows;
 
 
-import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
@@ -16,15 +12,10 @@ import javafx.scene.input.Dragboard;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.stage.Modality;
-import javafx.stage.Stage;
-import snorochevskiy.mynotes.sources.AbstractNoteSource;
-import snorochevskiy.mynotes.sources.NoteResource;
+import snorochevskiy.mynotes.note.AbstractNoteSource;
+import snorochevskiy.mynotes.note.NoteResource;
 
-import java.io.IOException;
-
-public class NoteResourcesWindow {
-
-    private Stage stage = new Stage();
+public class NoteResourcesWindow extends BaseFxWindow {
 
     @FXML private ListView<NoteResource> resourcesListView;
     @FXML private Label fileInfoLabel;
@@ -35,20 +26,9 @@ public class NoteResourcesWindow {
     private NoteResource selectedResource = null;
 
     public NoteResourcesWindow(AbstractNoteSource noteSource) {
+        super("/fxml/NoteResourcesWindow.fxml", "Note resources", Modality.APPLICATION_MODAL);
+
         this.noteSource = noteSource;
-
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/NoteResourcesWindow.fxml"));
-            loader.setController(this);
-
-            Parent root = loader.load();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            e.printStackTrace();
-            Platform.exit();
-        }
-        stage.setTitle("Create new note");
-        stage.initModality(Modality.APPLICATION_MODAL);
 
         onInsertButton.disableProperty().bind(resourcesListView.getSelectionModel().selectedItemProperty().isNull());
         onDeleteButton.disableProperty().bind(resourcesListView.getSelectionModel().selectedItemProperty().isNull());
@@ -83,9 +63,8 @@ public class NoteResourcesWindow {
     private void onDragDropped(DragEvent event) {
         Dragboard db = event.getDragboard();
         boolean success = false;
-        if (db.hasString()) {
+        if (db.hasString()) { // db.getString() is file URI
             db.getFiles().stream().forEach(f -> noteSource.addResource(f));
-            System.out.println(db.getString()); // file URI
             success = true;
             initResourcesList();
         }
@@ -97,7 +76,7 @@ public class NoteResourcesWindow {
 
     @FXML
     private void onDragDetected(DragEvent event) {
-        System.out.println("onDragDetected: " + event.getClass().getCanonicalName());
+
     }
 
     @FXML

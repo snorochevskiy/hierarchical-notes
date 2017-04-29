@@ -74,7 +74,6 @@ public class CreateSpaceWindow {
 
     @FXML
     private void onCreateButtonClick(MouseEvent event) {
-        System.out.println("'" + spaceNameTextEdit.getText() + "'");
         if (spaceDirectory == null) {
             return;
         }

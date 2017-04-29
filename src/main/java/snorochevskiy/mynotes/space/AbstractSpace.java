@@ -4,7 +4,7 @@ package snorochevskiy.mynotes.space;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import snorochevskiy.mynotes.markups.Markup;
-import snorochevskiy.mynotes.sources.AbstractNoteSource;
+import snorochevskiy.mynotes.note.AbstractNoteSource;
 
 public abstract class AbstractSpace {
 

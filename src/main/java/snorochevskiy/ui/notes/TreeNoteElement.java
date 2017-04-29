@@ -2,7 +2,7 @@ package snorochevskiy.ui.notes;
 
 import javafx.collections.ObservableList;
 import javafx.scene.control.TreeItem;
-import snorochevskiy.mynotes.sources.AbstractNoteSource;
+import snorochevskiy.mynotes.note.AbstractNoteSource;
 
 
 public class TreeNoteElement extends TreeItem<AbstractNoteSource> {

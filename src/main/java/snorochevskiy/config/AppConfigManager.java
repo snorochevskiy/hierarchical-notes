@@ -15,7 +15,7 @@ import java.util.Properties;
 
 public class AppConfigManager {
 
-    private static final String DIRECTORY_CONFIGS = "mynotes";
+    private static final String DIRECTORY_CONFIGS = "hierarchical-notes";
     private static final String DIRECTORY_SPACES = "spaces";
 
     private static final String FILE_APPLICATION_PROPERTIES = "application.properties";
@@ -40,6 +40,10 @@ public class AppConfigManager {
     }
 
     public static void write(AppConfig appConfig) {
+
+        if (appConfig == null) {
+            return;
+        }
 
         try {
             Properties properties = new Properties();

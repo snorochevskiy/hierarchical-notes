@@ -1,4 +1,4 @@
-package snorochevskiy.mynotes.sources;
+package snorochevskiy.mynotes.note;
 
 import snorochevskiy.mynotes.markups.Markup;
 
@@ -8,17 +8,29 @@ import java.util.List;
 public abstract class AbstractNoteSource {
 
     private AbstractNoteSource parent;
+
+    private String id;
     private String name;
     private Markup markup;
 
-    public AbstractNoteSource(AbstractNoteSource parent, String name, Markup markup) {
+    public AbstractNoteSource(AbstractNoteSource parent, String id, String name, Markup markup) {
+        this.id = id;
         this.parent = parent;
         this.name = name;
-        this.markup = markup;
+        this.markup = (markup != null ? markup : Markup.MARKDOWN);
     }
 
     public AbstractNoteSource(AbstractNoteSource parent) {
         this.parent = parent;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    // XXX:  maybe make this setter at least protected?
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNoteName() {
@@ -51,6 +63,8 @@ public abstract class AbstractNoteSource {
 
     public abstract List<AbstractNoteSource> getChildrenNotes();
 
+    public abstract void updateChildrenOrder(List<AbstractNoteSource> children);
+
     public abstract AbstractNoteSource createChildNote(String name, Markup markup);
 
     public abstract void removedNote();
@@ -75,7 +89,7 @@ public abstract class AbstractNoteSource {
      * @return
      */
     protected String internalName(String noteName) {
-        return noteName;
+        return noteName.replaceAll(",|:|;|$|!", "");
     }
 
     @Override

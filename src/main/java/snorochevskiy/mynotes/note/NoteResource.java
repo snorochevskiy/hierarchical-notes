@@ -1,4 +1,4 @@
-package snorochevskiy.mynotes.sources;
+package snorochevskiy.mynotes.note;
 
 /**
  * Represents resource nested inside the note.
