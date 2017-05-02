@@ -59,6 +59,7 @@
                 <Menu mnemonicParsing="false" text="Space">
                   <items>
                     <MenuItem mnemonicParsing="false" onAction="#onSpaceMenuDeleteSpace" text="Delete" />
+                        <MenuItem mnemonicParsing="false" onAction="#onSpaceMenuCloseSpace" text="Close" />
                   </items>
                 </Menu>
                   <Menu mnemonicParsing="false" text="Note" />

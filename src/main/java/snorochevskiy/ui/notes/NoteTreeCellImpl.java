@@ -54,7 +54,7 @@ public class NoteTreeCellImpl extends TreeCell<AbstractNoteSource> {
 //            @Override public void handle(MouseEvent t) {
 //
 //                if (t.getButton() == MouseButton.PRIMARY /*&& t.getClickCount() == 2*/) {
-//                    mainWindowController.setSelectedNote(getItem());
+//                    mainWindowController.handleNoteSelected(getItem());
 //                    //t.consume();
 //                }
 //            }

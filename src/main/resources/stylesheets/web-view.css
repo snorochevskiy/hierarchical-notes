@@ -1,3 +1,7 @@
 p {
-    font-family: Arial;
+    font-family: 'Open Sans', sans-serif;
+}
+
+code {
+    background-color: f0f0f0;
 }

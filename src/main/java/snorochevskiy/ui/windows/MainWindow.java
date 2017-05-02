@@ -63,9 +63,6 @@ public class MainWindow {
     @FXML private TextArea editorTextArea;
     @FXML private WebView resultWebView;
 
-    //private List<AbstractSpace> spaces = new ArrayList<AbstractSpace>();
-    private AbstractNoteSource selectedNote;
-
     @FXML private ToolBar editToolbar;
     @FXML private ToolBar resultToolbar;
 
@@ -116,25 +113,22 @@ public class MainWindow {
         spaceChoiceBox.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<AbstractSpace>() {
             @Override
             public void changed(ObservableValue<? extends AbstractSpace> observable, AbstractSpace oldValue, AbstractSpace newValue) {
-                setSelectedSpace(newValue);
-                initFileView();
+                handleSpaceSelected();
             }
         });
 
         // Tree view init
         notesTreeView.setEditable(false);
-
         notesTreeView.setCellFactory(new Callback<TreeView<TreeNoteElement>, TreeCell<TreeNoteElement> >() {
             public TreeCell call(TreeView param) {
                 return new NoteTreeCellImpl(MainWindow.this);
             }
         });
-
         notesTreeView.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<TreeItem<AbstractNoteSource>>() {
             @Override
             public void changed(ObservableValue<? extends TreeItem<AbstractNoteSource>> observable, TreeItem<AbstractNoteSource> oldValue, TreeItem<AbstractNoteSource> newValue) {
                 if (newValue instanceof TreeNoteElement) {
-                    setSelectedNote(((TreeNoteElement)newValue).getValue());
+                    handleNoteSelected(((TreeNoteElement)newValue).getValue());
                 }
             }
         });
@@ -159,9 +153,10 @@ public class MainWindow {
                     // Just skip this space. Probably it was removed.
                 }
             }
-            initFileView();
+            drawFileView();
         }
-
+        // XXX It selects (highlights) element in tree only if it's called here. Only for the first time
+        notesTreeView.getSelectionModel().select(notesTreeView.getRoot());
     }
 
     //-----------------
@@ -193,7 +188,7 @@ public class MainWindow {
             }
             setSelectedSpace(space);
 
-            initFileView();
+            drawFileView();
         }
     }
 
@@ -214,6 +209,22 @@ public class MainWindow {
     }
 
     @FXML
+    private void onSpaceMenuCloseSpace() {
+        if (spaceChoiceBox.getValue() == null) {
+            return;
+        }
+
+        AbstractSpace currentSpace = spaceChoiceBox.getValue();
+        spaceChoiceBox.getItems().remove(currentSpace);
+
+        if (spaceChoiceBox.getItems().isEmpty()) {
+            setSelectedSpace(null);
+        } else {
+            setSelectedSpace(spaceChoiceBox.getItems().get(0));
+        }
+    }
+
+    @FXML
     private void onHelpMenuAbout() {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("About");
@@ -227,17 +238,17 @@ public class MainWindow {
     // ---------------------
     @FXML
     private void onSaveButtonAction(ActionEvent event) {
-        if (selectedNote == null) {
+        if (getSelectedNote() == null) {
             return;
         }
-        selectedNote.saveContents(editorTextArea.getText());
+        getSelectedNote().saveContents(editorTextArea.getText());
     }
 
     @FXML
     private void onViewNoteButtonAction() {
 
-        AbstractMarkupTransformer transformer = MarkupTransformerManager.getInstance().byMarkup(selectedNote.getMarkup());
-        String html = transformer.transform(selectedNote, editorTextArea.getText());
+        AbstractMarkupTransformer transformer = MarkupTransformerManager.getInstance().byMarkup(getSelectedNote().getMarkup());
+        String html = transformer.transform(getSelectedNote(), editorTextArea.getText());
 
         resultWebView.getEngine().loadContent(html);
 
@@ -251,7 +262,7 @@ public class MainWindow {
 
     @FXML
     private void onResourcesToolButton(ActionEvent event) {
-        NoteResourcesWindow noteResourcesWindow = new NoteResourcesWindow(this.selectedNote);
+        NoteResourcesWindow noteResourcesWindow = new NoteResourcesWindow(getSelectedNote());
         NoteResource noteResource = noteResourcesWindow.show();
         if (noteResource != null) {
             if (noteResource.getContentType().startsWith("image")) {
@@ -297,15 +308,15 @@ public class MainWindow {
         resultWebView.setVisible(true);
     }
 
-    public void setSelectedNote(AbstractNoteSource note) {
+    public void handleNoteSelected(AbstractNoteSource note) {
         if (note == null) {
             return;
         }
-        selectedNote = note;
-        editorTextArea.setText(selectedNote.getContents());
+        editorTextArea.setText(note.getContents());
 
-        AbstractMarkupTransformer transformer = MarkupTransformerManager.getInstance().byMarkup(selectedNote.getMarkup());
-        String html = transformer.transform(selectedNote, selectedNote.getContents());
+        AbstractMarkupTransformer transformer = MarkupTransformerManager.getInstance().byMarkup(note.getMarkup());
+        String html = transformer.transform(note, note.getContents());
+        System.out.println(html);
 
         resultWebView.getEngine().loadContent(html);
         resultWebView.getEngine().documentProperty().addListener(new ChangeListener<Document>() {
@@ -321,16 +332,20 @@ public class MainWindow {
 
     private void setSelectedSpace(AbstractSpace space) {
         spaceChoiceBox.setValue(space);
-        initFileView();
+    }
+
+    private void handleSpaceSelected() {
+        drawFileView();
+        notesTreeView.getSelectionModel().select(notesTreeView.getRoot());
     }
 
 
-    // TODO call this method on space choice box CHANGED event
-    private void initFileView() {
+    private void drawFileView() {
 
         if (spaceChoiceBox.getValue() == null) {
             return;
         }
+        // XXX Maybe save previously rendered tree for previous space?
 
         TreeNoteElement rootItem = new TreeNoteElement(spaceChoiceBox.getValue().getRootNote());
         notesTreeView.setRoot(rootItem);
@@ -338,31 +353,16 @@ public class MainWindow {
 
     }
 
+    /**
+     * Adds handlers to links, to implement navigation between notes.
+     * @param document
+     */
     private void modifyDom(Document document) {
         NodeList nodeList = document.getElementsByTagName("a");
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node node= nodeList.item(i);
             EventTarget eventTarget = (EventTarget) node;
-            eventTarget.addEventListener("click", new EventListener() {
-                @Override
-                public void handleEvent(Event evt) {
-                    EventTarget target = evt.getCurrentTarget();
-                    HTMLAnchorElement anchorElement = (HTMLAnchorElement) target;
-                    String href = anchorElement.getHref();
-
-                    if (href.matches("^\\w{2,}:.+")) {
-                        // TODO : open in media viewer
-                    } else {
-                        TreeNoteElement treeNoteElement = findRelativeNote(selectedNote, href);
-                        if (treeNoteElement != null) {
-                            notesTreeView.getSelectionModel().select(treeNoteElement);
-                            setSelectedNote(treeNoteElement.getValue());
-                        }
-                    }
-
-                    evt.preventDefault();
-                }
-            }, false);
+            eventTarget.addEventListener("click", linkClickedEventListener,true);
         }
     }
 
@@ -370,10 +370,6 @@ public class MainWindow {
         String[] path = href.split("/+");
 
         TreeNoteElement currentlySelectedTreeItem = ((TreeNoteElement)notesTreeView.getSelectionModel().getSelectedItem());
-
-//        if (path.length == 1) {
-//            return findChildTreeNoteItemByName(currentlySelectedTreeItem, href);
-//        }
 
         for (String p : path) {
             if (currentlySelectedTreeItem == null) {
@@ -396,6 +392,34 @@ public class MainWindow {
             }
         }
         return null;
+    }
+
+    private AbstractNoteSource getSelectedNote() {
+        return ((TreeNoteElement)notesTreeView.getSelectionModel().getSelectedItem()).getValue();
+    }
+
+    private final LinkClickedEventListener linkClickedEventListener = new LinkClickedEventListener();
+
+    private class LinkClickedEventListener implements EventListener {
+
+        @Override
+        public void handleEvent(Event evt) {
+            System.out.println(this.hashCode());
+            EventTarget target = evt.getCurrentTarget();
+            HTMLAnchorElement anchorElement = (HTMLAnchorElement) target;
+            String href = anchorElement.getHref();
+
+            if (href.matches("^\\w{2,}:.+")) {
+                // TODO : open in media viewer
+            } else {
+                TreeNoteElement treeNoteElement = findRelativeNote(getSelectedNote(), href);
+                if (treeNoteElement != null) {
+                    notesTreeView.getSelectionModel().select(treeNoteElement);
+                }
+            }
+
+            evt.preventDefault();
+        }
     }
 
 }

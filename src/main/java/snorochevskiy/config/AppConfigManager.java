@@ -24,7 +24,10 @@ public class AppConfigManager {
     private static final String PROPERTY_LAST_ACTIVE_SPACE_ID = "lastActiveSpaceId";
 
     public static File getConfigDirectory() {
-        File configDir = new File(System.getProperty("user.home") + File.separator + DIRECTORY_CONFIGS);
+
+        String configFolderPath = System.getProperty("hnHome", System.getProperty("user.home") + File.separator + DIRECTORY_CONFIGS);
+
+        File configDir = new File(configFolderPath);
         if (!configDir.exists()) {
             configDir.mkdirs();
         }
