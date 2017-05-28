@@ -5,3 +5,15 @@ p {
 code {
     background-color: f0f0f0;
 }
+
+table, td, th {
+    border: 1px solid #ddd;
+}
+
+table {
+    border-collapse: collapse;
+}
+
+td {
+    padding: 10px;
+}

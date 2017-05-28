@@ -19,9 +19,9 @@
 
 <BorderPane fx:id="mainWindow" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.112" xmlns:fx="http://javafx.com/fxml/1">
    <center>
-      <SplitPane dividerPositions="0.2" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+      <SplitPane dividerPositions="0.2" prefHeight="200.0" prefWidth="200.0">
          <items>
-            <VBox spacing="5.0">
+            <VBox spacing="5.0" SplitPane.resizableWithParent="false">
                <children>
                   <ChoiceBox fx:id="spaceChoiceBox" maxWidth="1.7976931348623157E308" />
                   <TreeView fx:id="notesTreeView" VBox.vgrow="ALWAYS" />

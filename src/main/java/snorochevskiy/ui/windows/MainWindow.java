@@ -265,6 +265,9 @@ public class MainWindow {
         NoteResourcesWindow noteResourcesWindow = new NoteResourcesWindow(getSelectedNote());
         NoteResource noteResource = noteResourcesWindow.show();
         if (noteResource != null) {
+
+            // Insert image entry in markdown format
+            // TODO : move to some currentMarkdown().insertResource()
             if (noteResource.getContentType().startsWith("image")) {
                 int caretPosition = editorTextArea.getCaretPosition();
                 String text = editorTextArea.getText();
@@ -316,6 +319,8 @@ public class MainWindow {
 
         AbstractMarkupTransformer transformer = MarkupTransformerManager.getInstance().byMarkup(note.getMarkup());
         String html = transformer.transform(note, note.getContents());
+        // TODO : find out why css 'td {padding: 10px;}' is ignored
+        html = html.replace("<table>", "<table cellpadding=\"5\">");
         System.out.println(html);
 
         resultWebView.getEngine().loadContent(html);
@@ -328,6 +333,7 @@ public class MainWindow {
             }
         });
         toNoteViewMode();
+
     }
 
     private void setSelectedSpace(AbstractSpace space) {
@@ -364,6 +370,7 @@ public class MainWindow {
             EventTarget eventTarget = (EventTarget) node;
             eventTarget.addEventListener("click", linkClickedEventListener,true);
         }
+
     }
 
     private TreeNoteElement findRelativeNote(AbstractNoteSource ownerNote, String href) {
@@ -404,7 +411,7 @@ public class MainWindow {
 
         @Override
         public void handleEvent(Event evt) {
-            System.out.println(this.hashCode());
+
             EventTarget target = evt.getCurrentTarget();
             HTMLAnchorElement anchorElement = (HTMLAnchorElement) target;
             String href = anchorElement.getHref();

@@ -11,7 +11,7 @@ import snorochevskiy.ui.windows.MainWindow;
 
 import java.io.IOException;
 
-// -Dsun.awt.disablegrab=true
+// Add to VM for debugging in linux: -Dsun.awt.disablegrab=true
 public class App extends Application {
 
     public static void main(String[] args) {
